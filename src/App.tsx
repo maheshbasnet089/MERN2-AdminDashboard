@@ -34,9 +34,10 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <DefaultLayout>
+
      <Provider store={store}>
      <Routes>
+
         <Route
           index
           element={
@@ -58,19 +59,20 @@ function App() {
         <Route
           path="/profile"
           element={
-            <>
+            <DefaultLayout>
               <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Profile />
-            </>
+             </DefaultLayout>
           }
         />
         <Route
           path="/forms/form-elements"
           element={
-            <>
+            <DefaultLayout> <>
               <PageTitle title="Form Elements | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <FormElements />
             </>
+            </DefaultLayout>
           }
         />
         <Route
@@ -128,26 +130,18 @@ function App() {
           }
         />
         <Route
-          path="/auth/signin"
+          path="/login"
           element={
             <>
-              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="login" />
               <SignIn />
             </>
           }
         />
-        <Route
-          path="/auth/signup"
-          element={
-            <>
-              <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignUp />
-            </>
-          }
-        />
+      
       </Routes>
      </Provider>
-    </DefaultLayout>
+
   );
 }
 
