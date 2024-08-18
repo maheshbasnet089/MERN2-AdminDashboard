@@ -17,6 +17,13 @@ const initialState:InititalState = {
    singleProduct : null
 }
 
+interface DeleteProduct{
+    productId : string
+}
+interface DeleteUser{
+    userId : string
+}
+
 const dataSlice = createSlice({
     name : 'data', 
     initialState,
@@ -35,11 +42,19 @@ const dataSlice = createSlice({
         },
         setSingleProduct(state:InititalState,action:PayloadAction<Product>){
             state.singleProduct = action.payload 
+        }, 
+        setDeleteProduct(state:InititalState,action:PayloadAction<DeleteProduct>){
+            const index = state.products.findIndex(item=>item.id = action.payload.productId)
+            state.products.splice(index,1)
+        },
+        setDeleteUser(state:InititalState,action:PayloadAction<DeleteUser>){
+            const index = state.users.findIndex(item=>item.id = action.payload.productId)
+            state.users.splice(index,1)
         }
     }
 })
 
-export const {setOrders,setProduct,setStatus,setUsers,setSingleProduct} = dataSlice.actions
+export const {setOrders,setProduct,setStatus,setUsers,setSingleProduct,setDeleteProduct,setDeleteUser} = dataSlice.actions
 export default dataSlice.reducer 
 
 
@@ -121,6 +136,23 @@ export function deleteProduct(id:string){
             const response = await APIAuthenticated.delete('/admin/product/' + id)
             if(response.status === 200){
                 dispatch(setStatus(Status.SUCCESS))
+                
+            }else{
+                dispatch(setStatus(Status.ERROR))
+            }
+        } catch (error) {
+            dispatch(setStatus(Status.ERROR))
+        }
+    }
+}
+export function deleteUser(id:string){
+    return async function deleteUserThunk(dispatch : AppDispatch){
+        dispatch(setStatus(Status.LOADING))
+        try {
+            const response = await APIAuthenticated.delete('/admin/user/' + id)
+            if(response.status === 200){
+                dispatch(setStatus(Status.SUCCESS))
+                
             }else{
                 dispatch(setStatus(Status.ERROR))
             }
@@ -130,11 +162,12 @@ export function deleteProduct(id:string){
     }
 }
 
+
 export function deleteOrder(id:string){
     return async function deleteProductThunk(dispatch : AppDispatch){
         dispatch(setStatus(Status.LOADING))
         try {
-            const response = await APIAuthenticated.delete('/order/admin' + id)
+            const response = await APIAuthenticated.delete('/order/admin/' + id)
             if(response.status === 200){
                 dispatch(setStatus(Status.SUCCESS))
             }else{

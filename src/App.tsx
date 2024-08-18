@@ -43,7 +43,10 @@ function App() {
           element={
             <>
               <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <DefaultLayout>
+
               <ECommerce />
+              </DefaultLayout>
             </>
           }
         />
@@ -52,7 +55,10 @@ function App() {
           element={
             <>
               <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <DefaultLayout>
+
               <Calendar />
+              </DefaultLayout>
             </>
           }
         />
@@ -80,7 +86,10 @@ function App() {
           element={
             <>
               <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <DefaultLayout>
+
               <FormLayout />
+              </DefaultLayout>
             </>
           }
         />
@@ -89,7 +98,10 @@ function App() {
           element={
             <>
               <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <DefaultLayout>
+
               <Tables />
+              </DefaultLayout>
             </>
           }
         />
