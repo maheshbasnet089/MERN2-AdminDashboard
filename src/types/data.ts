@@ -7,10 +7,7 @@ export interface User{
     created_at : string
 }
 
-interface Category{
-    id : string, 
-    categoryName : string
-}
+
 
 export interface Product{
     id? : string, 
@@ -57,12 +54,16 @@ export interface ItemDetails{
     id : string, 
     orderStatus : OrderStatus
 }
-
+export interface Category{
+    id : string, 
+    categoryName : string
+}
 export interface InititalState{
     products : Product[], 
     users : User[],
     orders : OrderData[], 
     status : Status, 
+    categories :Category[],
     singleProduct : Product | null
 
 }

@@ -1,18 +1,26 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
-import { InititalState, OrderData, Product, User } from '../types/data'
+import { Category, InititalState, OrderData, Product, User } from '../types/data'
 import { Status } from '../types/status'
 
 import { AppDispatch } from './store'
 import { APIAuthenticated } from '../http'
 
 
-
+export interface AddProduct{
+    productName : string, 
+    productDescription : string, 
+    productPrice : number, 
+    productTotalStockQty : number, 
+    image : null, 
+    categoryId : string
+}
 
 
 const initialState:InititalState = {
     orders : [], 
     products : [], 
     users : [], 
+    categories : [],
    status : Status.LOADING, 
    singleProduct : null
 }
@@ -22,6 +30,12 @@ interface DeleteProduct{
 }
 interface DeleteUser{
     userId : string
+}
+interface DeleteOrder{
+    orderId : string
+}
+interface DeleteCategory{
+    categoryId : string
 }
 
 const dataSlice = createSlice({
@@ -37,6 +51,9 @@ const dataSlice = createSlice({
         setOrders(state:InititalState,action:PayloadAction<OrderData[]>){
             state.orders = action.payload 
         }, 
+        setCategories(state:InititalState,action:PayloadAction<Category[]>){
+            state.categories = action.payload 
+        },
         setUsers(state:InititalState,action:PayloadAction<User[]>){
             state.users = action.payload 
         },
@@ -48,13 +65,21 @@ const dataSlice = createSlice({
             state.products.splice(index,1)
         },
         setDeleteUser(state:InititalState,action:PayloadAction<DeleteUser>){
-            const index = state.users.findIndex(item=>item.id = action.payload.productId)
+            const index = state.users.findIndex(item=>item.id = action.payload.userId)
             state.users.splice(index,1)
+        }, 
+        setDeleteOrder(state:InititalState,action:PayloadAction<DeleteOrder>){
+            const index = state.orders.findIndex(item=>item.id = action.payload.orderId)
+            state.orders.splice(index,1)
+        }, 
+        setDeleteCategory(state:InititalState,action:PayloadAction<DeleteCategory>){
+            const index = state.categories.findIndex(item=>item.id = action.payload.categoryId)
+            state.categories.splice(index,1)
         }
     }
 })
 
-export const {setOrders,setProduct,setStatus,setUsers,setSingleProduct,setDeleteProduct,setDeleteUser} = dataSlice.actions
+export const {setOrders,setCategories,setDeleteCategory,setProduct,setStatus,setUsers,setSingleProduct,setDeleteProduct,setDeleteUser,setDeleteOrder} = dataSlice.actions
 export default dataSlice.reducer 
 
 
@@ -113,11 +138,15 @@ export function fetchUsers(){
 }
 
 
-export function addProduct(data:Product){
+export function addProduct(data:AddProduct){
     return async function addProductThunk(dispatch : AppDispatch){
         dispatch(setStatus(Status.LOADING))
         try {
-            const response = await APIAuthenticated.post('/admin/product',data)
+            const response = await APIAuthenticated.post('/admin/product',data,{
+                headers : {
+                    "Content-Type" : "multipart/form-data"
+                }
+            })
             if(response.status === 200){
                 dispatch(setStatus(Status.SUCCESS))
             }else{
@@ -129,6 +158,40 @@ export function addProduct(data:Product){
     }
 }
 
+export function addCategory(data:{categoryName : string}){
+    return async function addCategoryThunk(dispatch : AppDispatch){
+        dispatch(setStatus(Status.LOADING))
+        try {
+            const response = await APIAuthenticated.post('/admin/category',data)
+            if(response.status === 200){
+                dispatch(setStatus(Status.SUCCESS))
+                setCategories(response.data.data)
+            }else{
+                dispatch(setStatus(Status.ERROR))
+            }
+        } catch (error) {
+            dispatch(setStatus(Status.ERROR))
+        }
+    }
+}
+
+export function fetchCaetgories(){
+    return async function fetchCaetgoriesThunk(dispatch : AppDispatch ){
+        dispatch(setStatus(Status.LOADING))
+        try{
+            const response = await APIAuthenticated.get('admin/category')
+            if(response.status === 200){
+                const {data} = response.data 
+                dispatch(setStatus(Status.SUCCESS))
+                dispatch(setCategories(data))
+            }else{
+                dispatch(setStatus(Status.ERROR))
+            }
+        }catch(error){
+            dispatch(setStatus(Status.ERROR))
+        }
+    }
+ }
 export function deleteProduct(id:string){
     return async function deleteProductThunk(dispatch : AppDispatch){
         dispatch(setStatus(Status.LOADING))
@@ -149,9 +212,11 @@ export function deleteUser(id:string){
     return async function deleteUserThunk(dispatch : AppDispatch){
         dispatch(setStatus(Status.LOADING))
         try {
-            const response = await APIAuthenticated.delete('/admin/user/' + id)
+            const response = await APIAuthenticated.delete('/users/' + id)
             if(response.status === 200){
                 dispatch(setStatus(Status.SUCCESS))
+                dispatch(setDeleteUser({userId:id}))
+
                 
             }else{
                 dispatch(setStatus(Status.ERROR))
@@ -170,6 +235,23 @@ export function deleteOrder(id:string){
             const response = await APIAuthenticated.delete('/order/admin/' + id)
             if(response.status === 200){
                 dispatch(setStatus(Status.SUCCESS))
+                dispatch(setDeleteOrder({orderId : id}))
+            }else{
+                dispatch(setStatus(Status.ERROR))
+            }
+        } catch (error) {
+            dispatch(setStatus(Status.ERROR))
+        }
+    }
+}
+export function deleteCategory(id:string){
+    return async function deleteProductThunk(dispatch : AppDispatch){
+        dispatch(setStatus(Status.LOADING))
+        try {
+            const response = await APIAuthenticated.delete('/admin/category/' + id)
+            if(response.status === 200){
+                dispatch(setStatus(Status.SUCCESS))
+                dispatch(setDeleteCategory({categoryId : id}))
             }else{
                 dispatch(setStatus(Status.ERROR))
             }
@@ -196,3 +278,4 @@ export function singleProduct(id:string){
         }
     }
 }
+
