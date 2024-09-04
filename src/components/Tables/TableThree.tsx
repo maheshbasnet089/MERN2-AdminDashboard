@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { deleteOrder, fetchOrders, setDeleteProduct } from '../../store/dataSlice';
 import { OrderStatus } from '../../types/data';
+import { Link } from 'react-router-dom';
 
 
 const TableThree = () => {
@@ -46,7 +47,7 @@ const TableThree = () => {
               <tr key={key}>
                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                   <h5 className="font-medium text-black dark:text-white">
-                    {order.id}
+                  <Link to={`/order/${order.id}`}>{order.id}</Link>
                   </h5>
                   <p className="text-sm">${order.phoneNumber}</p>
                 </td>
