@@ -80,15 +80,38 @@ const dataSlice = createSlice({
         setSingleOrder(state:InititalState,action:PayloadAction<SingleOrder[]>){
             state.singleOrder = action.payload
         }, 
+        updateOrderById(state,action){
+            const index = state.orders.findIndex(order=>order.id === action.payload.orderId)
+            if(index !== -1){
+                state.orders[index].orderStatus = action.payload.data
+            }
+        },
         // setOrderStatus(state:InititalState,action:PayloadAction<{id:string,status:string}>){
         //     state.singleOrder
         // }, 
     }
 })
 
-export const {setOrders,setCategories,setSingleOrder,setDeleteCategory,setProduct,setStatus,setUsers,setSingleProduct,setDeleteProduct,setDeleteUser,setDeleteOrder} = dataSlice.actions
+export const {setOrders,setCategories,setSingleOrder,setDeleteCategory,setProduct,setStatus,setUsers,setSingleProduct,setDeleteProduct,setDeleteUser,setDeleteOrder,updateOrderById} = dataSlice.actions
 export default dataSlice.reducer 
 
+
+export function updateOrderStatus(orderId,orderStatus){
+    return async function updateOrderStatusThunk(dispatch:AppDispatch){
+        dispatch(setStatus(Status.LOADING))
+        try {
+            
+            const response = await APIAuthenticated.patch(`order/admin/${orderId}`,{orderStatus})
+            console.log(response,"Response")
+            dispatch(updateOrderById({orderId,data : response.data.data}))
+            
+            dispatch(setStatus(Status.SUCCESS))
+        } catch (error) {
+            
+            dispatch(setStatus(Status.ERROR))
+        }
+    }
+}
 
 export function fetchProducts(){
     return async function fetchProductsThunk(dispatch : AppDispatch ){

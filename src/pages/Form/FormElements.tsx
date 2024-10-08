@@ -43,6 +43,7 @@ const FormElements = () => {
   }
   const handleSubmit = (e:FormEvent<HTMLFormElement>)=>{
     e.preventDefault()
+    console.log("triggered")
    dispatch(addProduct(data))
   }
   return (

@@ -1,12 +1,14 @@
-import React, { ChangeEvent, useEffect } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../store/hooks'
-import { singleOrder } from '../store/dataSlice'
+import { singleOrder, updateOrderById, updateOrderStatus } from '../store/dataSlice'
+import { socket } from '../App'
 
 const SingleOrder = () => {
     const {id} = useParams()
     const dispatch = useAppDispatch()
     const {singleOrder:[order]} = useAppSelector((state)=>state.datas)
+    const [orderStatus,setOrderStatus] = useState(order?.Order?.orderStatus as string)
 
     useEffect(()=>{
         if(id){
@@ -15,10 +17,16 @@ const SingleOrder = () => {
         }
     },[])
     console.log(order)
-    // const handleOrderStatus = (e:ChangeEvent<HTMLSelectElement>){
-    //     dispatch(handleOrderStatus(e.target.value))
+    const handleOrderStatus = (e:ChangeEvent<HTMLSelectElement>)=>{
+        setOrderStatus(e.target.value)
+        socket.emit("updateOrderStatus",{
+          status : e.target.value,
+          orderId : id,
+          userId : order.Order.userId
+        })
+        dispatch(updateOrderStatus(id,e.target.value))
 
-    // }
+    }
 
 
   return (
@@ -111,7 +119,9 @@ const SingleOrder = () => {
        <div style={{display:'flex',flexDirection:'column',padding:'18px'}}>
        <div>
          <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Order Status</label>
-          <select id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
+          <select id="countries" 
+          onChange={handleOrderStatus}
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" >
           {/* <option value={filteredOrder?.orderStatus}>{filteredOrder?.orderStatus}</option> */}
           <option value="pending">pending</option>
           <option value="delivered">Delivered</option>
